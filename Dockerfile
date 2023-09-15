@@ -55,7 +55,8 @@ RUN apt-get update &&\
     chown -R pleroma /etc/pleroma &&\
     mkdir -p /usr/share/fasttext &&\
     curl -L https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.ftz -o /usr/share/fasttext/lid.176.ftz &&\
-    chmod 0644 /usr/share/fasttext/lid.176.ftz
+    chmod 0644 /usr/share/fasttext/lid.176.ftz &&\
+    git clone https://github.com/moeyy01/soapbox-build-production.git /opt/pleroma/instance
 
 USER pleroma
 
@@ -65,8 +66,5 @@ COPY --from=build --chown=pleroma:0 /src/release ${HOME}
 # 复制配置文件和docker-entrypoint.sh脚本
 COPY --chown=pleroma --chmod=640 ./config/docker.exs /etc/pleroma/config.exs
 COPY ./docker-entrypoint.sh ${HOME}
-RUN apt-get update &&\
-    apt-get install -y git
-RUN git clone https://github.com/moeyy01/soapbox-build-production.git /opt/pleroma/instance
 
 ENTRYPOINT ["/opt/pleroma/docker-entrypoint.sh"]
