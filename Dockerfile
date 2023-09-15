@@ -1,10 +1,13 @@
+# Stage 1: Build Stage
 FROM ubuntu:22.04 as build
 
+# 设置构建参数和工作目录
 ARG MIX_ENV=prod \
     OAUTH_CONSUMER_STRATEGIES="twitter facebook google microsoft slack github keycloak:ueberauth_keycloak_strategy"
 
 WORKDIR /src
 
+# 安装依赖和构建Release
 RUN apt-get update &&\
     apt-get install -y git elixir erlang-dev erlang-nox build-essential cmake libssl-dev libmagic-dev automake autoconf libncurses5-dev &&\
     mix local.hex --force &&\
@@ -17,8 +20,10 @@ RUN cd /src &&\
     mkdir release &&\
     mix release --path release
 
+# Stage 2: Runtime Stage
 FROM ubuntu:22.04
 
+# 设置构建的元数据
 ARG BUILD_DATE
 ARG VCS_REF
 
@@ -39,6 +44,7 @@ LABEL maintainer="hello@soapbox.pub" \
 ARG HOME=/opt/pleroma
 ARG DATA=/var/lib/pleroma
 
+# 安装运行时依赖
 RUN apt-get update &&\
     apt-get install -y --no-install-recommends curl ca-certificates imagemagick libmagic-dev ffmpeg libimage-exiftool-perl libncurses5 postgresql-client fasttext &&\
     adduser --system --shell /bin/false --home ${HOME} pleroma &&\
@@ -53,9 +59,15 @@ RUN apt-get update &&\
 
 USER pleroma
 
+# 从构建阶段复制Release
 COPY --from=build --chown=pleroma:0 /src/release ${HOME}
 
+# 复制配置文件和docker-entrypoint.sh脚本
 COPY --chown=pleroma --chmod=640 ./config/docker.exs /etc/pleroma/config.exs
 COPY ./docker-entrypoint.sh ${HOME}
+
+# 下载并解压Soapbox
+RUN curl -L https://gitlab.com/soapbox-pub/soapbox/-/jobs/artifacts/develop/download?job=build-production -o soapbox.zip &&\
+    busybox unzip soapbox.zip -o -d /opt/pleroma/instance
 
 ENTRYPOINT ["/opt/pleroma/docker-entrypoint.sh"]
