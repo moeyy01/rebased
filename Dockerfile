@@ -46,7 +46,7 @@ ARG DATA=/var/lib/pleroma
 
 # 安装运行时依赖
 RUN apt-get update &&\
-    apt-get install -y --no-install-recommends curl ca-certificates imagemagick libmagic-dev ffmpeg libimage-exiftool-perl libncurses5 postgresql-client fasttext &&\
+    apt-get install -y --no-install-recommends curl ca-certificates imagemagick libmagic-dev ffmpeg libimage-exiftool-perl libncurses5 postgresql-client fasttext curl unzip &&\
     adduser --system --shell /bin/false --home ${HOME} pleroma &&\
     mkdir -p ${DATA}/uploads &&\
     mkdir -p ${DATA}/static &&\
@@ -67,8 +67,8 @@ COPY --chown=pleroma --chmod=640 ./config/docker.exs /etc/pleroma/config.exs
 COPY ./docker-entrypoint.sh ${HOME}
 
 # 下载并解压Soapbox
-RUN wget https://gitlab.com/soapbox-pub/soapbox/-/jobs/artifacts/develop/download?job=build-production -O /tmp/soapbox.tar.gz && \
-    tar -xzvf /tmp/soapbox.tar.gz -C /opt/pleroma/instance --strip-components=1 && \
-    rm /tmp/soapbox.tar.gz
+RUN curl -L https://gitlab.com/soapbox-pub/soapbox/-/jobs/artifacts/develop/download?job=build-production -o /tmp/soapbox.zip &&\
+    unzip /tmp/soapbox.zip -d /opt/pleroma/instance &&\
+    rm /tmp/soapbox.zip
 
 ENTRYPOINT ["/opt/pleroma/docker-entrypoint.sh"]
