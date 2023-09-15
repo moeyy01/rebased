@@ -9,7 +9,7 @@ WORKDIR /src
 
 # 安装依赖和构建Release
 RUN apt-get update &&\
-    apt-get install -y git elixir erlang-dev erlang-nox build-essential cmake libssl-dev libmagic-dev automake autoconf libncurses5-dev busybox-static &&\
+    apt-get install -y git elixir erlang-dev erlang-nox build-essential cmake libssl-dev libmagic-dev automake autoconf libncurses5-dev  &&\
     mix local.hex --force &&\
     mix local.rebar --force
 
@@ -68,7 +68,7 @@ COPY ./docker-entrypoint.sh ${HOME}
 
 # 下载并解压Soapbox
 RUN curl -L https://gitlab.com/soapbox-pub/soapbox/-/jobs/artifacts/develop/download?job=build-production -o /tmp/soapbox.zip &&\
-    busybox unzip /tmp/soapbox.zip -o -d /opt/pleroma/instance &&\
+    unzip /tmp/soapbox.zip -d /opt/pleroma/instance &&\
     rm /tmp/soapbox.zip
 
 ENTRYPOINT ["/opt/pleroma/docker-entrypoint.sh"]
