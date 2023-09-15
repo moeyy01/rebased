@@ -9,7 +9,7 @@ WORKDIR /src
 
 # 安装依赖和构建Release
 RUN apt-get update &&\
-    apt-get install -y git elixir erlang-dev erlang-nox build-essential cmake libssl-dev libmagic-dev automake autoconf libncurses5-dev &&\
+    apt-get install -y git elixir erlang-dev erlang-nox build-essential cmake libssl-dev libmagic-dev automake autoconf libncurses5-dev busybox-static &&\
     mix local.hex --force &&\
     mix local.rebar --force
 
