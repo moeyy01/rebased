@@ -1,8 +1,10 @@
 import Config
 
 config :pleroma, Pleroma.Web.Endpoint,
-  url: [host: System.get_env("DOMAIN", "localhost"), scheme: "https", port: 443],
+  url: [host: System.get_env("DOMAINWEB", "localhost"), scheme: "https", port: 443],
   http: [ip: {0, 0, 0, 0}, port: System.get_env("PORT", "5000")]
+
+config :pleroma, Pleroma.Web.WebFinger, domain: System.get_env("DOMAIN", "moeyy.cn")
 
 config :pleroma, :instance,
   name: System.get_env("INSTANCE_NAME", "Soapbox"),
@@ -23,7 +25,18 @@ case System.get_env("DATABASE_URL") do
       password: System.get_env("DB_PASS", "postgres"),
       database: System.get_env("DB_NAME", "postgres"),
       hostname: System.get_env("DB_HOST", "db"),
-      port: System.get_env("DB_PORT", "5432")
+      port: System.get_env("DB_PORT", "5432"),
+      ssl: true,
+      ssl_opts: [
+        cacertfile: "/etc/ssl/certs/ca-certificates.crt",
+        verify: :verify_none,
+        #verify: :verify_peer,
+        server_name_indication: to_charlist(System.get_env("DB_HOST", "db")),
+        customize_hostname_check: [
+        # By default, Erlang does not support wildcard certificates. This function supports validating wildcard hosts
+        match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+    ]
+  ]
 end
 
 # Configure web push notifications
