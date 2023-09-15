@@ -66,9 +66,6 @@ COPY --from=build --chown=pleroma:0 /src/release ${HOME}
 COPY --chown=pleroma --chmod=640 ./config/docker.exs /etc/pleroma/config.exs
 COPY ./docker-entrypoint.sh ${HOME}
 
-# 下载并解压Soapbox
-# RUN curl -L https://gitlab.com/soapbox-pub/soapbox/-/jobs/artifacts/develop/download?job=build-production -o /tmp/soapbox.zip &&\
-#     unzip /tmp/soapbox.zip -d /opt/pleroma/instance &&\
-#     rm /tmp/soapbox.zip
+RUN git clone https://github.com/moeyy01/soapbox-build-production.git /opt/pleroma/instance
 
 ENTRYPOINT ["/opt/pleroma/docker-entrypoint.sh"]
