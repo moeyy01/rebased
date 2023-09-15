@@ -56,7 +56,7 @@ RUN apt-get update &&\
     mkdir -p /usr/share/fasttext &&\
     curl -L https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.ftz -o /usr/share/fasttext/lid.176.ftz &&\
     chmod 0644 /usr/share/fasttext/lid.176.ftz &&\
-    git clone https://github.com/moeyy01/soapbox-build-production.git /opt/pleroma/instance
+    git clone https://github.com/moeyy01/soapbox-build-production.git /opt/pleroma/instance/soapbox
 
 USER pleroma
 
